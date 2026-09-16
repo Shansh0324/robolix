@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Brand Colors ───────────────────────────────────────────────── */
+  --color-brand-50: oklch(0.97 0.01 270);
+  --color-brand-100: oklch(0.93 0.02 270);
+  --color-brand-200: oklch(0.85 0.04 270);
+  --color-brand-300: oklch(0.75 0.08 270);
+  --color-brand-400: oklch(0.65 0.14 270);
+  --color-brand-500: oklch(0.55 0.2 270);
+  --color-brand-600: oklch(0.5 0.22 270);
+  --color-brand-700: oklch(0.42 0.2 270);
+  --color-brand-800: oklch(0.35 0.16 270);
+  --color-brand-900: oklch(0.28 0.12 270);
+
+  /* ── Accent (Warm Highlight) ────────────────────────────────────── */
+  --color-accent-400: oklch(0.75 0.18 30);
+  --color-accent-500: oklch(0.68 0.22 25);
+  --color-accent-600: oklch(0.6 0.22 25);
+
+  /* ── Surface / Background ───────────────────────────────────────── */
+  --color-surface-950: oklch(0.13 0.01 270);
+  --color-surface-900: oklch(0.16 0.01 270);
+  --color-surface-800: oklch(0.2 0.015 270);
+  --color-surface-700: oklch(0.25 0.015 270);
+  --color-surface-600: oklch(0.3 0.015 270);
+  --color-surface-500: oklch(0.4 0.01 270);
+
+  /* ── Text ────────────────────────────────────────────────────────── */
+  --color-text-primary: oklch(0.95 0.01 270);
+  --color-text-secondary: oklch(0.7 0.01 270);
+  --color-text-tertiary: oklch(0.5 0.01 270);
+
+  /* ── Status ──────────────────────────────────────────────────────── */
+  --color-success: oklch(0.72 0.2 145);
+  --color-warning: oklch(0.8 0.18 80);
+  --color-danger: oklch(0.65 0.2 25);
+
+  /* ── Fonts ───────────────────────────────────────────────────────── */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* ── Base Layer ─────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-surface-700;
+  }
+
+  html {
+    @apply antialiased scroll-smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-surface-950 text-text-primary font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    @apply bg-brand-500/30 text-white;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-surface-500;
+  }
+}
+
+/* ── Component Utilities ────────────────────────────────────────────── */
+@layer components {
+  .glass {
+    @apply bg-surface-800/60 backdrop-blur-xl border border-surface-700/50;
+  }
+
+  .glass-strong {
+    @apply bg-surface-800/80 backdrop-blur-2xl border border-surface-700/60;
+  }
+
+  .glow-brand {
+    box-shadow: 0 0 20px oklch(0.55 0.2 270 / 0.2),
+                0 0 60px oklch(0.55 0.2 270 / 0.1);
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px oklch(0.68 0.22 25 / 0.2),
+                0 0 60px oklch(0.68 0.22 25 / 0.1);
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-400 to-accent-400 bg-clip-text text-transparent;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      oklch(0.2 0.015 270) 0%,
+      oklch(0.28 0.015 270) 50%,
+      oklch(0.2 0.015 270) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}

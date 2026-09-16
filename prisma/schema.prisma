@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── User ───────────────────────────────────────────────────────────────────
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  projects Project[]
+
+  @@map("users")
+}
+
+// ─── Project ────────────────────────────────────────────────────────────────
+
+model Project {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+  generations   Generation[]
+  modelVersions ModelVersion[]
+
+  @@index([userId])
+  @@map("projects")
+}
+
+// ─── Conversation ───────────────────────────────────────────────────────────
+
+model Conversation {
+  id        String   @id @default(uuid())
+  projectId String
+  title     String   @default("New Conversation")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  messages    Message[]
+  generations Generation[]
+
+  @@index([projectId])
+  @@map("conversations")
+}
+
+// ─── Message ────────────────────────────────────────────────────────────────
+
+model Message {
+  id             String      @id @default(uuid())
+  conversationId String
+  role           String      // "USER" | "ASSISTANT" | "SYSTEM"
+  content        String
+  metadata       String?     // Stored as JSON string in SQLite
+  createdAt      DateTime    @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  attachments  Attachment[]
+
+  @@index([conversationId])
+  @@map("messages")
+}
+
+// ─── Attachment ─────────────────────────────────────────────────────────────
+
+model Attachment {
+  id        String   @id @default(uuid())
+  messageId String
+  fileName  String
+  mimeType  String
+  fileSize  Int
+  localPath String
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@map("attachments")
+}
+
+// ─── Generation ─────────────────────────────────────────────────────────────
+
+model Generation {
+  id             String           @id @default(uuid())
+  projectId      String
+  conversationId String
+  status         String           @default("QUEUED") // GenerationStatus
+  prompt         String
+  generationType String           // GenerationType
+  aiProvider     String?
+  modelProvider  String?
+  modelName      String?
+  error          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  project       Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  conversation  Conversation   @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  modelVersions ModelVersion[]
+
+  @@index([projectId])
+  @@index([conversationId])
+  @@index([status])
+  @@map("generations")
+}
+
+// ─── ModelVersion ───────────────────────────────────────────────────────────
+
+model ModelVersion {
+  id            String   @id @default(uuid())
+  generationId  String
+  projectId     String
+  version       Int
+  filePath      String
+  format        String   @default("glb")
+  fileSize      Int?
+  triangleCount Int?
+  vertexCount   Int?
+  createdAt     DateTime @default(now())
+
+  generation Generation @relation(fields: [generationId], references: [id], onDelete: Cascade)
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([generationId])
+  @@index([projectId])
+  @@map("model_versions")
+}
