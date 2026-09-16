@@ -14,12 +14,11 @@ export function ModelViewer() {
   const { messages } = useChatStore();
   const [modelUrl, setModelUrl] = useState<string | null>(null);
 
-  // Find the latest model URL from messages
+  // Find the latest model URL from messages (only from MODEL type messages)
   useEffect(() => {
-    // Traverse backwards to find the last message with a modelUrl
     for (let i = messages.length - 1; i >= 0; i--) {
       const metadata = messages[i].metadata as any;
-      if (metadata?.modelUrl) {
+      if (metadata?.type === "MODEL" && metadata?.modelUrl) {
         setModelUrl(metadata.modelUrl as string);
         break;
       }
